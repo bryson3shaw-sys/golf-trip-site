@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>70th Birthday Golf Trip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@300;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --gold:#C9943A; --dark:#0D0D0D; --panel:#141414; --cream:#F2EDE3; --muted:rgba(242,237,227,0.45);
+      --blue:#3BAFD4; --green:#4DB87A;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background:var(--dark); color:var(--cream); font-family:'Barlow',sans-serif; overflow:hidden;
+    }
+    #app{width:100vw;height:100vh;display:flex;flex-direction:column}
+    .progress{height:3px;background:rgba(255,255,255,.06);flex-shrink:0}
+    .progress-bar{height:100%;background:var(--gold);width:0;transition:width .35s ease}
+    .topbar,.bottombar{
+      display:flex;align-items:center;justify-content:space-between;padding:12px 28px;flex-shrink:0;
+    }
+    .topbar{border-bottom:1px solid rgba(255,255,255,.05)}
+    .bottombar{border-top:1px solid rgba(255,255,255,.05);gap:12px}
+    .brand,.meta{
+      font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.25em
+    }
+    .brand{font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.4em}
+    .meta{color:var(--muted)}
+    #content{flex:1;position:relative;overflow:hidden}
+    .nav-btn{
+      width:40px;height:40px;border-radius:4px;font-size:18px;display:flex;align-items:center;justify-content:center;
+      transition:.2s;cursor:pointer
+    }
+    .nav-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--cream)}
+    .nav-btn.fill{background:var(--gold);border:none;color:var(--dark)}
+    .nav-btn.disabled{cursor:not-allowed;color:rgba(255,255,255,.15)!important;background:transparent!important;border:1px solid rgba(255,255,255,.08)!important}
+    #dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:70%}
+    .dot{height:7px;border:none;border-radius:4px;background:rgba(255,255,255,.18);cursor:pointer;padding:0;transition:.25s}
+    .title-page,.finale-page{
+      height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;
+    }
+    .eyebrow{
+      font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;margin-bottom:14px;
+    }
+    .serif{font-family:Georgia,'Times New Roman',serif}
+    .title-big{font-size:clamp(48px,9vw,120px);font-weight:900;line-height:.92}
+    .subtitle{
+      font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:.18em;color:var(--muted)
+    }
+    .smallcaps{
+      font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;letter-spacing:.3em;text-transform:uppercase
+    }
+    .overview{
+      display:grid;grid-template-columns:1fr 1fr;height:100%;
+    }
+    .overview-left{
+      background:#0A0A0A;display:flex;flex-direction:column;justify-content:center;padding:48px 44px;border-right:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;
+    }
+    .big-watermark{
+      font-family:Georgia,serif;font-size:clamp(100px,14vw,180px);font-weight:900;color:rgba(255,255,255,.04);line-height:1;
+      position:absolute;top:20px;left:24px;user-select:none;
+    }
+    .overview-right{
+      background:var(--panel);padding:36px 40px;display:flex;flex-direction:column;justify-content:center;overflow:auto;
+    }
+    .stats{display:flex;gap:24px;flex-wrap:wrap}
+    .stat-num{font-family:Georgia,serif;font-size:clamp(22px,3vw,36px);font-weight:900;line-height:1}
+    .stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .timeline-row{display:flex;align-items:flex-start;gap:14px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .course-page{height:100%;display:flex;flex-direction:column;overflow:hidden}
+    .course-top{
+      display:flex;align-items:center;gap:12px;padding:14px 32px;background:#0A0A0A;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0
+    }
+    .course-grid{display:grid;grid-template-columns:60% 40%;flex:1;overflow:hidden}
+    .photo-wrap{position:relative;overflow:hidden;background:#000}
+    .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .photo-arw{
+      position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:20px;cursor:pointer
+    }
+    .photo-left{left:16px}.photo-right{right:16px}
+    .photo-dots{
+      position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px
+    }
+    .photo-dot{height:8px;border:none;border-radius:4px;cursor:pointer;padding:0;transition:.2s}
+    .course-info{background:var(--panel);padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+    .choice-buttons{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+    .choice-btn{
+      border:1px solid rgba(255,255,255,.15);background:transparent;padding:22px 28px;cursor:pointer;min-width:150px;color:var(--cream)
+    }
+    .choice-btn:hover{transform:translateY(-1px)}
+    @media (max-width: 900px){
+      .overview,.course-grid{grid-template-columns:1fr}
+      .overview-left{padding:34px 28px}
+      .overview-right,.course-info{padding:28px 24px}
+      .topbar,.bottombar{padding:10px 14px}
+      .brand,.meta{font-size:10px}
+      #dots{max-width:58%}
+    }
+  </style>
+</head>
+<body>
+<div id="app" tabindex="0">
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="topbar">
+    <div class="brand">⛳ 70th Birthday Golf Trip</div>
+    <div class="meta" id="breadcrumb"></div>
+    <div class="meta" id="counter"></div>
+  </div>
+  <div id="content"></div>
+  <div class="bottombar">
+    <button id="prevBtn" class="nav-btn ghost">‹</button>
+    <div id="dots"></div>
+    <button id="nextBtn" class="nav-btn fill">›</button>
+  </div>
+</div>
+
+<script>
+const gold = "#C9943A";
+const blue = "#3BAFD4";
+const green = "#4DB87A";
+const cream = "#F2EDE3";
+const mutedText = "rgba(242,237,227,0.45)";
+
+const trips = [
+  {
+    id: 1,
+    label: "Option 01",
+    name: "The Desert Loop",
+    tagline: "Sedona · Black Desert · The Ledges",
+    color: gold,
+    emoji: "🌵",
+    dates: "June 28 – July 3, 2026",
+    days: [
+      { day: "Sun Jun 28", icon: "🚗", course: "Drive Ruidoso → Sedona", detail: "~6 hrs · Courtyard Marriott Sedona · Dinner & rest" },
+      { day: "Mon Jun 29", icon: "⛳", course: "Sedona Golf Resort", detail: "18 holes · Red rock canyon views · Cathedral Rock backdrop" },
+      { day: "Tue Jun 30", icon: "🏆", course: "Black Desert Resort", detail: "PGA Tour host · Lava rock fairways · Stay & play feel" },
+      { day: "Wed Jul 1", icon: "⛳", course: "The Ledges — St. George", detail: "Slot canyon setting · Snow Canyon style views" },
+      { day: "Thu Jul 2", icon: "🏠", course: "Drive home to Ruidoso", detail: "Back home for the birthday weekend 🎂" }
+    ],
+    stats: [["3", "Courses"], ["3", "States"], ["Desert", "Scenery"], ["Epic", "Views"]],
+    courses: [
+      { name: "Sedona Golf Resort", location: "Sedona, Arizona", desc: "Cathedral Rock backdrop and iconic red rock views.", imgs: ["images/sedona-1.jpg", "images/sedona-2.webp"] },
+      { name: "Black Desert Resort", location: "Ivins, Utah", desc: "Lava rock fairways and dramatic desert design.", imgs: ["images/black-desert-1.jpg", "images/black-desert-2.jpg", "images/black-desert-3.jpg"] },
+      { name: "The Ledges", location: "St. George, Utah", desc: "Snow Canyon style desert scenery.", imgs: ["images/theledges-1.jpg"] }
+    ]
+  },
+  {
+    id: 2,
+    label: "Option 02",
+    name: "Torrey Pines Baby",
+    tagline: "La Jolla · Torrey Pines North & South · Singing Hills",
+    color: blue,
+    emoji: "🌊",
+    dates: "June 28 – July 3, 2026",
+    days: [
+      { day: "Sun Jun 28", icon: "🚗", course: "Drive Ruidoso → La Jolla", detail: "~10 hrs · Hotel check-in · Dinner & rest" },
+      { day: "Mon Jun 29", icon: "⛳", course: "Torrey Pines North", detail: "Pacific bluff views · Public oceanfront golf" },
+      { day: "Tue Jun 30", icon: "🏆", course: "Torrey Pines South", detail: "Historic championship course · Clifftop setting" },
+      { day: "Wed Jul 1", icon: "⛳", course: "Singing Hills Golf Course", detail: "Closer to San Diego · Cleaner route home" },
+      { day: "Thu Jul 2", icon: "🏠", course: "Drive home to Ruidoso", detail: "Wrap up the coast-to-desert loop 🎂" }
+    ],
+    stats: [["3", "Courses"], ["Ocean", "Views"], ["SoCal", "Vibe"], ["Public", "Golf"]],
+    courses: [
+      { name: "Torrey Pines North", location: "La Jolla, California", desc: "Public oceanfront golf at its best.", imgs: ["images/torrey-pines-north-1.webp", "images/torrey-pines-north-2.webp"] },
+      { name: "Torrey Pines South", location: "La Jolla, California", desc: "Historic championship golf on the cliffs above the Pacific.", imgs: ["images/torrey-pines-south-1.jpg", "images/torrey-pines-south-2.webp"] },
+      { name: "Singing Hills Golf Course", location: "El Cajon, California", desc: "A perfect SoCal finale round close to San Diego before heading home.", imgs: ["images/singing-hills-1.jpg"] }
+    ]
+  },
+  {
+    id: 3,
+    label: "Option 03",
+    name: "The PGA West Triple",
+    tagline: "La Quinta · Three PGA West Courses",
+    color: green,
+    emoji: "🌴",
+    dates: "June 28 – July 3, 2026",
+    days: [
+      { day: "Sun Jun 28", icon: "🚗", course: "Drive Ruidoso → La Quinta", detail: "~9 hrs · Check in near PGA West" },
+      { day: "Mon Jun 29", icon: "🏆", course: "Pete Dye Stadium Course", detail: "Desert drama · Iconic Alcatraz style visuals" },
+      { day: "Tue Jun 30", icon: "⛳", course: "Pete Dye Mountain Course", detail: "Mountain walls · Elevated desert shots" },
+      { day: "Wed Jul 1", icon: "⛳", course: "Nicklaus Tournament Course", detail: "Classic desert design · Water and resort visuals" },
+      { day: "Thu Jul 2", icon: "🏠", course: "Drive home to Ruidoso", detail: "Back in time for the birthday 🎂" }
+    ],
+    stats: [["3", "Courses"], ["1", "Base"], ["PGA", "West"], ["Desert", "Resort"]],
+    courses: [
+      { name: "Pete Dye Stadium Course", location: "La Quinta, California", desc: "The iconic Alcatraz island green and desert drama.", imgs: ["images/pga-west-stadium-1.jpg"] },
+      { name: "Pete Dye Mountain Course", location: "La Quinta, California", desc: "Elevated tees and mountain walls.", imgs: ["images/pete-dye-mountain-1.webp", "images/pete-dye-mountain-2.jpg"] },
+      { name: "Nicklaus Tournament Course", location: "La Quinta, California", desc: "Jack Nicklaus classic desert layout.", imgs: ["images/nicklaus-1.jpg", "images/nicklaus-2.jpg"] }
+    ]
+  }
+];
+
+function buildPages(){
+  const pages = [{type:"title"}];
+  trips.forEach(trip=>{
+    pages.push({type:"trip-overview", trip});
+    trip.courses.forEach(course=>pages.push({type:"course", trip, course, imgIdx:0}));
+  });
+  pages.push({type:"finale"});
+  return pages;
+}
+
+const pages = buildPages();
+const TOTAL = pages.length;
+let pageIdx = 0;
+
+function goTo(i){
+  pageIdx = Math.max(0, Math.min(TOTAL - 1, i));
+  render();
+}
+function prev(){ goTo(pageIdx - 1); }
+function next(){ goTo(pageIdx + 1); }
+
+function getPageLabel(page){
+  if(page.type === "title") return "Welcome";
+  if(page.type === "finale") return "Your Choice";
+  if(page.type === "trip-overview") return `${page.trip.label} · Overview`;
+  if(page.type === "course") return `${page.trip.label} · ${page.course.name}`;
+  return "";
+}
+
+function renderTitlePage(){
+  return `
+    <div class="title-page">
+      <div style="font-size:56px;margin-bottom:20px">⛳</div>
+      <div class="eyebrow" style="color:${gold}">A 70th Birthday Surprise</div>
+      <div class="serif title-big" style="margin-bottom:8px">Choose Your</div>
+      <div class="serif title-big" style="color:${gold};margin-bottom:28px">Adventure</div>
+      <div class="subtitle" style="margin-bottom:8px">Three golf trips. One legendary birthday.</div>
+      <div class="smallcaps" style="color:${gold}">June 28 – July 3, 2026</div>
+    </div>
+  `;
+}
+
+function renderOverviewPage(trip){
+  const stats = trip.stats.map(([num,lbl]) => `
+    <div>
+      <div class="stat-num" style="color:${trip.color}">${num}</div>
+      <div class="stat-label">${lbl}</div>
+    </div>
+  `).join("");
+
+  const rows = trip.days.map((d, i) => `
+    <div class="timeline-row" style="${i === trip.days.length - 1 ? 'border-bottom:none;margin-bottom:0;padding-bottom:0' : ''}">
+      <div style="font-size:18px;flex-shrink:0;padding-top:1px">${d.icon}</div>
+      <div style="flex:1">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:${trip.color};margin-bottom:3px">${d.day}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:clamp(14px,1.4vw,18px);font-weight:700;line-height:1.2;margin-bottom:3px">${d.course}</div>
+        <div style="font-size:clamp(11px,.9vw,13px);color:${mutedText};font-weight:300;line-height:1.45">${d.detail}</div>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="overview">
+      <div class="overview-left">
+        <div class="big-watermark">${trip.id}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:${trip.color};margin-bottom:12px;position:relative;z-index:1">${trip.label}</div>
+        <div class="serif" style="font-size:clamp(34px,4.5vw,58px);font-weight:900;line-height:1;margin-bottom:10px;position:relative;z-index:1">${trip.name}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:300;letter-spacing:.1em;color:${mutedText};margin-bottom:32px;position:relative;z-index:1">${trip.tagline}</div>
+        <div style="width:40px;height:2px;background:${trip.color};margin-bottom:32px;position:relative;z-index:1"></div>
+        <div class="stats" style="position:relative;z-index:1">${stats}</div>
+      </div>
+      <div class="overview-right">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:${trip.color};margin-bottom:18px">Day by Day</div>
+        <div>${rows}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCoursePage(page){
+  const trip = page.trip;
+  const course = page.course;
+  const idx = page.imgIdx || 0;
+  const image = course.imgs[idx];
+  const photoDots = course.imgs.map((_, i) => `
+    <button class="photo-dot" onclick="setCourseImage(${pageIdx}, ${i})"
+      style="width:${i===idx?24:8}px;background:${i===idx?'#fff':'rgba(255,255,255,.35)'}"></button>
+  `).join("");
+
+  return `
+    <div class="course-page">
+      <div class="course-top">
+        <div style="width:3px;height:20px;background:${trip.color};border-radius:2"></div>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:${trip.color}">${trip.label}</span>
+        <span style="color:rgba(255,255,255,.15);font-size:12px">·</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em">${course.name}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:${mutedText};letter-spacing:.08em">— ${course.location}</span>
+      </div>
+      <div class="course-grid">
+        <div class="photo-wrap">
+          <img src="${image}" alt="${course.name}" onerror="this.style.opacity=.25; this.alt='Missing image: ${image}'">
+          ${idx > 0 ? `<button class="photo-arw photo-left" onclick="setCourseImage(${pageIdx}, ${idx-1})">‹</button>` : ""}
+          ${idx < course.imgs.length - 1 ? `<button class="photo-arw photo-right" onclick="setCourseImage(${pageIdx}, ${idx+1})">›</button>` : ""}
+          <div class="photo-dots">${photoDots}</div>
+        </div>
+        <div class="course-info">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:${trip.color};margin-bottom:14px">${course.location}</div>
+          <div class="serif" style="font-size:clamp(26px,3vw,42px);font-weight:900;line-height:1.05;margin-bottom:20px">${course.name}</div>
+          <div style="width:36px;height:2px;background:${trip.color};margin-bottom:20px"></div>
+          <div style="font-size:clamp(13px,1.2vw,16px);color:rgba(242,237,227,.7);font-weight:300;line-height:1.7;margin-bottom:28px">${course.desc}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:${mutedText}">
+            ${idx + 1} / ${course.imgs.length} photos
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderFinalePage(){
+  const buttons = trips.map((trip, i) => `
+    <button class="choice-btn" onclick="goTo(${1 + i * 4})"
+      style="border-color:${trip.color}40"
+      onmouseenter="this.style.background='${trip.color}18';this.style.borderColor='${trip.color}'"
+      onmouseleave="this.style.background='transparent';this.style.borderColor='${trip.color}40'">
+      <div class="serif" style="font-size:44px;font-weight:900;color:${trip.color};line-height:1;margin-bottom:8px">${String(trip.id).padStart(2, "0")}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,237,227,.6);line-height:1.5">
+        ${trip.name}<br>${trip.emoji} ${trip.tagline.split("·")[0].trim()}
+      </div>
+    </button>
+  `).join("");
+
+  return `
+    <div class="finale-page">
+      <div style="font-size:52px;margin-bottom:20px">🎂 ⛳ 🎉</div>
+      <div class="serif" style="font-size:clamp(44px,7vw,96px);font-weight:900;line-height:.92;margin-bottom:12px">
+        Happy <span style="color:${gold}">70th.</span><br>Pick Your Trip.
+      </div>
+      <div class="subtitle" style="margin-bottom:8px">Three adventures. One legendary birthday.</div>
+      <div class="smallcaps" style="color:${gold};margin-bottom:44px">June 28 – July 3, 2026</div>
+      <div class="choice-buttons">${buttons}</div>
+    </div>
+  `;
+}
+
+function setCourseImage(pageIndex, imgIndex){
+  if (pages[pageIndex] && pages[pageIndex].type === "course"){
+    pages[pageIndex].imgIdx = imgIndex;
+    render();
+  }
+}
+window.setCourseImage = setCourseImage;
+window.goTo = goTo;
+
+function renderDots(){
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+  pages.forEach((p, i) => {
+    const btn = document.createElement("button");
+    const active = i === pageIdx;
+    const col = p.trip?.color || "rgba(255,255,255,0.3)";
+    btn.className = "dot";
+    btn.style.width = active ? "22px" : "7px";
+    btn.style.background = active ? col : "rgba(255,255,255,0.18)";
+    btn.title = getPageLabel(p);
+    btn.onclick = () => goTo(i);
+    dots.appendChild(btn);
+  });
+}
+
+function render(){
+  const page = pages[pageIdx];
+  document.getElementById("breadcrumb").textContent = getPageLabel(page);
+  document.getElementById("counter").textContent = `${pageIdx + 1} / ${TOTAL}`;
+  document.getElementById("progressBar").style.width = `${((pageIdx + 1) / TOTAL) * 100}%`;
+  document.getElementById("content").innerHTML =
+    page.type === "title" ? renderTitlePage() :
+    page.type === "trip-overview" ? renderOverviewPage(page.trip) :
+    page.type === "course" ? renderCoursePage(page) :
+    renderFinalePage();
+
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  prevBtn.className = "nav-btn ghost" + (pageIdx === 0 ? " disabled" : "");
+  nextBtn.className = "nav-btn fill" + (pageIdx === TOTAL - 1 ? " disabled" : "");
+  renderDots();
+}
+
+document.getElementById("prevBtn").addEventListener("click", () => { if(pageIdx > 0) prev(); });
+document.getElementById("nextBtn").addEventListener("click", () => { if(pageIdx < TOTAL - 1) next(); });
+document.getElementById("app").addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); if (pageIdx < TOTAL - 1) next(); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); if (pageIdx > 0) prev(); }
+});
+render();
+</script>
+</body>
+</html>
